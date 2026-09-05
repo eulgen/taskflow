@@ -35,4 +35,25 @@ public class Task {
 
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    private java.time.LocalDateTime createdAt;
+
+    private java.time.LocalDateTime updatedAt;
+
+    @jakarta.persistence.PrePersist
+    protected void onCreate() {
+        this.createdAt = java.time.LocalDateTime.now();
+        this.updatedAt = java.time.LocalDateTime.now();
+        if (this.status == null) {
+            this.status = Status.TODO;
+        }
+        if (this.priority == null) {
+            this.priority = Priority.MEDIUM;
+        }
+    }
+
+    @jakarta.persistence.PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = java.time.LocalDateTime.now();
+    }
 }

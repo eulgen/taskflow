@@ -1,0 +1,119 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+      
+      - name: Build (compile)
+        run: mvn -B compile
+
+      - name: Unit tests
+        run: mvn -B test
+        
+      - name: Integration tests
+        run: mvn -B verify -Pintegration
+        
+      - name: JaCoCo coverage check (Quality Gate)
+        run: mvn -B jacoco:report jacoco:check
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: target/site/jacoco/
+          retention-days: 14
+
+      - name: Étape non bloquante (ex. linter optionnel)
+        run: mvn -B checkstyle:check
+        continue-on-error: true
+
+      - name: Alerter uniquement si le job précédent a échoué
+        if: failure()
+        run: echo "Le build a échoué, une alerte serait envoyée ici."
+  
+  
+#  compatibility-check:
+#    runs-on: ubuntu-latest
+#
+#    strategy:
+#      matrix:
+#        java: [ 21 ]
+#
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v4
+#
+#      - name: Setup Java
+#        uses: actions/setup-java@v4
+#        with:
+#          distribution: temurin
+#          java-version: ${{ matrix.java }}
+#          cache: maven
+#
+#      - name: Build (compile)
+#        run: mvn -B compile
+#
+#      - name: Unit tests
+#        run: mvn -B test
+#
+#      - name: Integration tests
+#        run: mvn -B verify -Pintegration
+#
+#      - name: JaCoCo coverage check (Quality Gate)
+#        run: mvn -B jacoco:report jacoco:check
+#
+#      - name: Upload coverage report
+#        if: always()
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: jacoco-report-${{ matrix.java }}
+#          path: target/site/jacoco/
+#          retention-days: 14
+#
+#      - name: Étape non bloquante (ex. linter optionnel)
+#        run: mvn -B checkstyle:check
+#        continue-on-error: true
+#
+#      - name: Alerter uniquement si le job précédent a échoué
+#        if: failure()
+#        run: echo "Le build a échoué, une alerte serait envoyée ici."
+    
+  e2e-tests:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+      
+
+    

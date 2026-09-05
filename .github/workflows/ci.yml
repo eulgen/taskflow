@@ -52,6 +52,22 @@ jobs:
       - name: Alerter uniquement si le job précédent a échoué
         if: failure()
         run: echo "Le build a échoué, une alerte serait envoyée ici."
+
+      - name: Test de lecture du Secret
+        run: echo "Le secret a bien été lu et masqué (***) par GitHub Actions"
+        env:
+          WEBHOOK_URL: ${{ secrets.NOTIFY_WEBHOOK_URL }}
+
+      - name: Test Read Application Properties
+        run: |
+          echo "SPRING_DATASOURCE_URL=${{ env.SPRING_DATASOURCE_URL }}"
+          echo "SPRING_DATASOURCE_USERNAME=${{ env.SPRING_DATASOURCE_USERNAME }}"
+          echo "SPRING_DATASOURCE_PASSWORD=${{ env.SPRING_DATASOURCE_PASSWORD }}"
+        env:
+          SPRING_DATASOURCE_URL: ${{ env.SPRING_DATASOURCE_URL }}
+          SPRING_DATASOURCE_USERNAME: ${{ env.SPRING_DATASOURCE_USERNAME }}
+          SPRING_DATASOURCE_PASSWORD: ${{ env.SPRING_DATASOURCE_PASSWORD }}
+      
   
   
 #  compatibility-check:
@@ -114,6 +130,3 @@ jobs:
           distribution: temurin
           java-version: 21
           cache: maven
-      
-
-    

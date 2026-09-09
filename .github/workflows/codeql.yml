@@ -37,7 +37,7 @@ jobs:
     steps:
       # Étape 1 : Récupération du code source
       - name: Récupérer le code du dépôt
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # Étape 2 : Initialisation du moteur d'analyse CodeQL pour Java
       - name: Initialiser CodeQL

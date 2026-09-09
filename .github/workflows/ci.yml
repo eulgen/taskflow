@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - name: Récupérer l'historique complet du dépôt
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0 # Historique complet (depth 0) nécessaire pour analyser tous les commits avec Gitleaks
 
@@ -42,7 +42,7 @@ jobs:
 
     steps:
       - name: Récupérer le code source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Configurer l'environnement Java 21 (Temurin)
         uses: actions/setup-java@v4
@@ -117,7 +117,7 @@ jobs:
 
     steps:
       - name: Récupérer le code source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Scanner le Dockerfile (Checkov)
         uses: bridgecrewio/checkov-action@master

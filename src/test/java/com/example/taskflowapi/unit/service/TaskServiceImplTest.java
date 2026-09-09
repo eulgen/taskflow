@@ -28,6 +28,9 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class TaskServiceTest {
 
+    // Fichier de test
+    String awsAccessKey = "AKIAIOSFODNN7EXAMPLE";
+
     @Mock
     private TaskRepository taskRepository;
 

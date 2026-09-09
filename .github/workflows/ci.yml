@@ -1,132 +1,159 @@
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 
-name: CI
+name: "CI (Intégration Continue)"
 
+# Déclencheurs du pipeline CI
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
 
+# Permissions globales du workflow
 permissions:
   contents: read
 
 jobs:
-  build-and-test:
+  # =========================================================================
+  # JOB 1 : Détection des secrets et fuites de clés dans l'historique du dépôt
+  # =========================================================================
+  secret-scan:
+    name: Détection des secrets (Gitleaks)
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      - name: Récupérer l'historique complet du dépôt
         uses: actions/checkout@v4
-      
-      - name: Setup Java
+        with:
+          fetch-depth: 0 # Historique complet (depth 0) nécessaire pour analyser tous les commits avec Gitleaks
+
+      - name: Exécuter le scan Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # =========================================================================
+  # JOB 2 : Compilation, Tests (Unitaires, Intégration, E2E) & Qualité de Code
+  # =========================================================================
+  build-and-test:
+    name: Build, Tests & Qualité de Code
+    needs: secret-scan # S'exécute uniquement si le scan de secrets ne trouve aucune fuite
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupérer le code source
+        uses: actions/checkout@v4
+
+      - name: Configurer l'environnement Java 21 (Temurin)
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 21
-          cache: maven
-      
-      - name: Build (compile)
+          cache: maven # Mise en cache des dépendances Maven (~/.m2) pour accélérer les futurs builds
+
+      - name: Compilation du projet Java (Maven)
         run: mvn -B compile
 
-      - name: Unit tests
+      - name: Exécution des tests unitaires
         run: mvn -B test
-        
-      - name: Integration tests
+
+      - name: Exécution des tests d'intégration
         run: mvn -B verify -Pintegration
-        
-      - name: JaCoCo coverage check (Quality Gate)
+
+      - name: Vérification du seuil de couverture de code JaCoCo (Quality Gate)
         run: mvn -B jacoco:report jacoco:check
 
-      - name: Upload coverage report
-        if: always()
+      - name: Archiver le rapport de couverture JaCoCo
+        if: always() # Toujours exécuté, même en cas d'échec d'une étape précédente
         uses: actions/upload-artifact@v4
         with:
           name: jacoco-report
           path: target/site/jacoco/
           retention-days: 14
 
-      - name: Étape non bloquante (ex. linter optionnel)
+      - name: Contrôle de la qualité de code (Checkstyle)
         run: mvn -B checkstyle:check
+        continue-on-error: true # Étape non bloquante en cas de non-respect du style de code
+
+      - name: Audit des licences (License Compliance)
+        run: mvn -B org.codehaus.mojo:license-maven-plugin:2.4.0:aggregate-third-party-report
+        continue-on-error: true # Étape non bloquante, pour simple vérification
+
+      - name: Alerte en cas d'échec du build
+        if: failure()
+        run: echo "Le build a échoué, notification d'alerte..."
+
+      - name: Vérification des variables d'environnement et secrets
+        run: |
+          echo "SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}"
+          echo "SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}"
+          echo "SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}"
+        env:
+          SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
+          SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+          SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+
+      - name: Démarrer l'application Spring Boot en arrière-plan
+        run: mvn -B spring-boot:start -Dspring-boot.run.fork=true
+
+      - name: Exécuter les tests End-to-End (E2E)
+        run: mvn -B test -Pe2e
+
+      - name: Arrêter l'application Spring Boot
+        if: always() # Garantit l'arrêt propre de l'application même si les tests E2E échouent
+        run: mvn spring-boot:stop
+
+  # =========================================================================
+  # JOB 3 : Build de l'image Docker & Scan de Vulnérabilités (Trivy)
+  # =========================================================================
+  container-scan:
+    name: Scan du Conteneur Docker (Trivy)
+    needs: build-and-test # S'exécute uniquement si le build et les tests ont réussi
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      security-events: write # Requis pour publier le rapport SARIF dans l'onglet Security de GitHub
+
+    steps:
+      - name: Récupérer le code source
+        uses: actions/checkout@v4
+
+      - name: Scanner le Dockerfile (Checkov)
+        uses: bridgecrewio/checkov-action@master
+        with:
+          file: Dockerfile
+          soft_fail: true # Ne bloque pas le pipeline, génère juste un avertissement
         continue-on-error: true
 
-      - name: Alerter uniquement si le job précédent a échoué
-        if: failure()
-        run: echo "Le build a échoué, une alerte serait envoyée ici."
+      - name: Construire l'image Docker
+        run: docker build -t taskflow-api:${{ github.sha }} .
 
-      - name: Test de lecture du Secret
-        run: echo "Le secret a bien été lu et masqué (***) par GitHub Actions"
-        env:
-          WEBHOOK_URL: ${{ secrets.NOTIFY_WEBHOOK_URL }}
-
-      - name: Test Read Application Properties
-        run: |
-          echo "SPRING_DATASOURCE_URL=${{ env.SPRING_DATASOURCE_URL }}"
-          echo "SPRING_DATASOURCE_USERNAME=${{ env.SPRING_DATASOURCE_USERNAME }}"
-          echo "SPRING_DATASOURCE_PASSWORD=${{ env.SPRING_DATASOURCE_PASSWORD }}"
-        env:
-          SPRING_DATASOURCE_URL: ${{ env.SPRING_DATASOURCE_URL }}
-          SPRING_DATASOURCE_USERNAME: ${{ env.SPRING_DATASOURCE_USERNAME }}
-          SPRING_DATASOURCE_PASSWORD: ${{ env.SPRING_DATASOURCE_PASSWORD }}
-      
-  
-  
-#  compatibility-check:
-#    runs-on: ubuntu-latest
-#
-#    strategy:
-#      matrix:
-#        java: [ 21 ]
-#
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v4
-#
-#      - name: Setup Java
-#        uses: actions/setup-java@v4
-#        with:
-#          distribution: temurin
-#          java-version: ${{ matrix.java }}
-#          cache: maven
-#
-#      - name: Build (compile)
-#        run: mvn -B compile
-#
-#      - name: Unit tests
-#        run: mvn -B test
-#
-#      - name: Integration tests
-#        run: mvn -B verify -Pintegration
-#
-#      - name: JaCoCo coverage check (Quality Gate)
-#        run: mvn -B jacoco:report jacoco:check
-#
-#      - name: Upload coverage report
-#        if: always()
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: jacoco-report-${{ matrix.java }}
-#          path: target/site/jacoco/
-#          retention-days: 14
-#
-#      - name: Étape non bloquante (ex. linter optionnel)
-#        run: mvn -B checkstyle:check
-#        continue-on-error: true
-#
-#      - name: Alerter uniquement si le job précédent a échoué
-#        if: failure()
-#        run: echo "Le build a échoué, une alerte serait envoyée ici."
-    
-  e2e-tests:
-    needs: build-and-test
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      
-      - name: Setup Java
-        uses: actions/setup-java@v4
+      - name: Générer l'inventaire des composants (SBOM avec Syft)
+        uses: anchore/sbom-action@v0
         with:
-          distribution: temurin
-          java-version: 21
-          cache: maven
+          image: taskflow-api:${{ github.sha }}
+          format: spdx-json
+          output-file: sbom.spdx.json
+
+      - name: Archiver le SBOM (Artefact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-report
+          path: sbom.spdx.json
+
+      - name: Scan de vulnérabilités Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: taskflow-api:${{ github.sha }}
+          format: sarif
+          output: trivy-results.sarif
+          severity: HIGH,CRITICAL
+          exit-code: "1" # Bloque le pipeline (échec du job) si des vulnérabilités HIGH ou CRITICAL sont trouvées
+
+      # Téléverse le rapport SARIF même si le scan a échoué (exit-code 1)
+      - name: Publier les résultats Trivy dans l'onglet Sécurité de GitHub
+        if: always() 
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif

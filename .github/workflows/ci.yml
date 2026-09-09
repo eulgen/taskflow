@@ -41,11 +41,6 @@ jobs:
     needs: secret-scan # S'exécute uniquement si le scan de secrets ne trouve aucune fuite
     runs-on: ubuntu-latest
 
-    env:
-      SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL || 'jdbc:postgresql://localhost:5432/taskflowdb' }}
-      SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME || 'postgres' }}
-      SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD || 'postgres' }}
-
     # Service PostgreSQL pour les tests et le démarrage de l'application
     services:
       postgres:
@@ -110,9 +105,17 @@ jobs:
           echo "SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}"
           echo "SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}"
           echo "SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}"
+        env:
+          SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL || 'jdbc:postgresql://localhost:5432/taskflowdb' }}
+          SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME || 'postgres' }}
+          SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD || 'postgres' }}
 
       - name: Démarrer l'application Spring Boot en arrière-plan
         run: mvn -B spring-boot:start -Dspring-boot.run.fork=true
+        env:
+          SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL || 'jdbc:postgresql://localhost:5432/taskflowdb' }}
+          SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME || 'postgres' }}
+          SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD || 'postgres' }}
 
       - name: Exécuter les tests End-to-End (E2E)
         run: mvn -B test -Pe2e

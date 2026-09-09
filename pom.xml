@@ -163,6 +163,11 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<!-- exécute les tests unitaires (*Test.java) -->
+				<configuration>
+					<excludes>
+						<exclude>**/*E2ETest.java</exclude>
+					</excludes>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

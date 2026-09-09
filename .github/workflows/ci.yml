@@ -14,6 +14,7 @@ permissions:
   contents: read
 
 jobs:
+
   # =========================================================================
   # JOB 1 : Détection des secrets et fuites de clés dans l'historique du dépôt
   # =========================================================================
@@ -108,7 +109,7 @@ jobs:
   # =========================================================================
   container-scan:
     name: Scan du Conteneur Docker (Trivy)
-    needs: build-and-test # S'exécute uniquement si le build et les tests ont réussi
+    needs: [secret-scan,build-and-test] # S'exécute uniquement si le build et les tests ont réussi
     runs-on: ubuntu-latest
 
     permissions:

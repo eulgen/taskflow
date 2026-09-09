@@ -49,7 +49,7 @@ jobs:
           POSTGRES_USER: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
           POSTGRES_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
           # On suppose que le nom de la base de données est extrait de l'URL ou on crée une DB par défaut
-          POSTGRES_DB: taskflow 
+          POSTGRES_DB: taskflowdb
         ports:
           - 5432:5432
         options: >-

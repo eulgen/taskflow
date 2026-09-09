@@ -96,6 +96,10 @@ jobs:
 
       - name: Démarrer l'application Spring Boot en arrière-plan
         run: mvn -B spring-boot:start -Dspring-boot.run.fork=true
+        env:
+          SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
+          SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+          SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
 
       - name: Exécuter les tests End-to-End (E2E)
         run: mvn -B test -Pe2e

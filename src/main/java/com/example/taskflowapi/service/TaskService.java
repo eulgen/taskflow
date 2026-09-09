@@ -8,7 +8,6 @@ import com.example.taskflowapi.model.Status;
 import java.util.List;
 
 public interface TaskService {
-
     TaskResponseDTO createTask(TaskRequestDTO taskRequestDTO);
 
     List<TaskResponseDTO> getAllTasks(Status status, Priority priority, String search);

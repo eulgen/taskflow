@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
+    String awsAccessKey = "AKIAIOSFODNN7EXAMPLE";
 
     @Override
     public TaskResponseDTO createTask(TaskRequestDTO taskRequestDTO) {

@@ -41,14 +41,14 @@ jobs:
 
       # Étape 2 : Initialisation du moteur d'analyse CodeQL pour Java
       - name: Initialiser CodeQL
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4
         with:
           languages: java # Langage cible (Java pour API TaskFlow)
 
       # Étape 3 : Compilation automatique du projet Java
       - name: Compiler automatiquement le projet
-        uses: github/codeql-action/autobuild@v3
+        uses: github/codeql-action/autobuild@v4
 
       # Étape 4 : Exécution de l'analyse de sécurité et publication des rapports
       - name: Analyser le code et envoyer le rapport
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4

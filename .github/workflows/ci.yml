@@ -41,6 +41,23 @@ jobs:
     needs: secret-scan # S'exécute uniquement si le scan de secrets ne trouve aucune fuite
     runs-on: ubuntu-latest
 
+    # Service PostgreSQL pour les tests et le démarrage de l'application
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+          POSTGRES_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+          # On suppose que le nom de la base de données est extrait de l'URL ou on crée une DB par défaut
+          POSTGRES_DB: taskflow 
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Récupérer le code source
         uses: actions/checkout@v4

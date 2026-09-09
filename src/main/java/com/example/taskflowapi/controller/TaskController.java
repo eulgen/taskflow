@@ -50,7 +50,7 @@ public class TaskController {
     })
     public ResponseEntity<TaskResponseDTO> createTask(@Valid @RequestBody TaskRequestDTO taskRequestDTO) {
         TaskResponseDTO createdTask = taskService.createTask(taskRequestDTO);
-        return new ResponseEntity<>(createdTask, HttpStatus.CREATED);
+        return new ResponseEntity<>(createdTask, HttpStatus.CREATED);        
     }
 
     @GetMapping

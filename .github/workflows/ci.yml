@@ -28,7 +28,7 @@ jobs:
           fetch-depth: 0 # Historique complet (depth 0) nécessaire pour analyser tous les commits avec Gitleaks
 
       - name: Exécuter le scan Gitleaks
-        uses: gitleaks/gitleaks-action@v2
+        uses: gitleaks/gitleaks-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

@@ -26,8 +26,7 @@ RUN --mount=type=cache,target=/root/.m2 \
 # =====================================================
 # Stage 2 : Runtime — image sécurisée (non-root + OS patchée)
 # =====================================================
-# Digest pinnée pour garantir la reproductibilité
-FROM eclipse-temurin:21-jre-alpine@sha256:974b08960c5d96694c780e65b2d5705268ab1e1ca1a0dd0caf4ba6c3fe34d699 AS runtime
+FROM eclipse-temurin:21-jre-alpine AS runtime
 
 LABEL maintainer="TaskFlow API"
 LABEL description="TaskFlow API - Spring Boot REST API"

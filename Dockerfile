@@ -24,19 +24,17 @@ RUN --mount=type=cache,target=/root/.m2 \
     ./mvnw package -DskipTests -B
 
 # =====================================================
-# Stage 2 : Runtime — image sécurisée (non-root + OS patchée)
+# Stage 2 : Runtime — image vulnérable pour l'exercice
 # =====================================================
-FROM eclipse-temurin:21-jre-alpine AS runtime
+# Utilisation d'une image volontairement ancienne pour déclencher Trivy
+FROM eclipse-temurin:21.0.1_12-jre-jammy AS runtime
 
 LABEL maintainer="TaskFlow API"
 LABEL description="TaskFlow API - Spring Boot REST API"
 LABEL version="0.0.1-SNAPSHOT"
 
-# Patcher les packages OS Alpine (OpenSSL CVE-2026-14456 et autres)
-RUN apk update && apk upgrade --no-cache && rm -rf /var/cache/apk/*
-
-# Sécurité : utilisateur non-root dédié
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+# Sécurité : utilisateur non-root dédié (syntaxe Ubuntu/Jammy)
+RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
 
 WORKDIR /app
 

@@ -5,16 +5,15 @@ name: "CI (Intégration Continue)"
 # Déclencheurs du pipeline CI
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 # Permissions globales du workflow
 permissions:
   contents: read
 
 jobs:
-
   # =========================================================================
   # JOB 1 : Détection des secrets et fuites de clés dans l'historique du dépôt
   # =========================================================================
@@ -129,7 +128,7 @@ jobs:
   # =========================================================================
   container-scan:
     name: Scan du Conteneur Docker (Trivy)
-    needs: [secret-scan,build-and-test] # S'exécute uniquement si le build et les tests ont réussi
+    needs: [secret-scan, build-and-test] # S'exécute uniquement si le build et les tests ont réussi
     runs-on: ubuntu-latest
 
     permissions:
@@ -175,7 +174,7 @@ jobs:
 
       # Téléverse le rapport SARIF même si le scan a échoué (exit-code 1)
       - name: Publier les résultats Trivy dans l'onglet Sécurité de GitHub
-        if: always() 
+        if: always()
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: trivy-results.sarif

@@ -22,7 +22,7 @@ public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
     String awsAccessKey = "AKIAIOSFODNN7EXAMPLE";
-    String googleAPIKey = "GOCSPX-abcdefghijklmnopqrstuvwxyz12345";
+    String googleAPIKey = "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";
 
     @Override
     public TaskResponseDTO createTask(TaskRequestDTO taskRequestDTO) {

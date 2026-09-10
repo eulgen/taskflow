@@ -46,8 +46,8 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_USER: ${{ secrets.SPRING_DATASOURCE_USERNAME || 'postgres' }}
-          POSTGRES_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD || 'postgres' }}
+          POSTGRES_USER: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+          POSTGRES_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
           POSTGRES_DB: taskflowdb
         ports:
           - 5432:5432
@@ -106,16 +106,16 @@ jobs:
           echo "SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}"
           echo "SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}"
         env:
-          SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL || 'jdbc:postgresql://localhost:5432/taskflowdb' }}
-          SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME || 'postgres' }}
-          SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD || 'postgres' }}
+          SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
+          SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+          SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
 
       - name: Démarrer l'application Spring Boot en arrière-plan
         run: mvn -B spring-boot:start -Dspring-boot.run.fork=true
         env:
-          SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL || 'jdbc:postgresql://localhost:5432/taskflowdb' }}
-          SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME || 'postgres' }}
-          SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD || 'postgres' }}
+          SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
+          SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+          SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
 
       - name: Exécuter les tests End-to-End (E2E)
         run: mvn -B test -Pe2e

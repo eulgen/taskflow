@@ -10,7 +10,7 @@ updates:
   - package-ecosystem: "maven"
     directory: "/" # Emplacement du fichier pom.xml (ici à la racine du projet)
     schedule:
-      interval: "weekly" # Fréquence de vérification des nouvelles versions (chaque semaine)
+      interval: "daily" # Fréquence de vérification des nouvelles versions (chaque semaine)
     open-pull-requests-limit: 5 # Limite le nombre de Pull Requests ouvertes simultanément à 5 pour ne pas engorger le dépôt
     labels: ["dependencies"] # Étiquette attribuée automatiquement aux PRs créées par Dependabot
 
@@ -20,4 +20,4 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/" # Recherche automatique des fichiers YAML dans .github/workflows/
     schedule:
-      interval: "weekly" # Vérifie les mises à jour des actions (ex: actions/checkout, actions/setup-java)
+      interval: "daily" # Vérifie les mises à jour des actions (ex: actions/checkout, actions/setup-java)

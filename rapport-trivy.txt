@@ -1,0 +1,92 @@
+
+Report Summary
+
+┌────────────────────────────────────┬────────┬─────────────────┬─────────┐
+│               Target               │  Type  │ Vulnerabilities │ Secrets │
+├────────────────────────────────────┼────────┼─────────────────┼─────────┤
+│ taskflow-api:local (alpine 3.24.1) │ alpine │        0        │    -    │
+├────────────────────────────────────┼────────┼─────────────────┼─────────┤
+│ app/app.jar                        │  jar   │       17        │    -    │
+└────────────────────────────────────┴────────┴─────────────────┴─────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+
+Java (jar)
+==========
+Total: 17 (HIGH: 14, CRITICAL: 3)
+
+┌────────────────────────────────────────────────────────┬─────────────────────┬──────────┬────────┬───────────────────┬───────────────────────────┬──────────────────────────────────────────────────────────────┐
+│                        Library                         │    Vulnerability    │ Severity │ Status │ Installed Version │       Fixed Version       │                            Title                             │
+├────────────────────────────────────────────────────────┼─────────────────────┼──────────┼────────┼───────────────────┼───────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ com.fasterxml.jackson.core:jackson-core (app.jar)      │ GHSA-r7wm-3cxj-wff9 │ HIGH     │ fixed  │ 2.19.1            │ 2.18.8, 2.21.4            │ jackson-core: Async parser maxNumberLength bypass via        │
+│                                                        │                     │          │        │                   │                           │ chunked digit accumulation (incomplete fix for...            │
+│                                                        │                     │          │        │                   │                           │ https://github.com/advisories/GHSA-r7wm-3cxj-wff9            │
+├────────────────────────────────────────────────────────┼─────────────────────┤          │        │                   ├───────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ com.fasterxml.jackson.core:jackson-databind (app.jar)  │ CVE-2026-54512      │          │        │                   │ 2.18.8, 3.1.4, 2.21.4     │ jackson-databind: jackson-databind: Arbitrary code execution │
+│                                                        │                     │          │        │                   │                           │ via PolymorphicTypeValidator bypass                          │
+│                                                        │                     │          │        │                   │                           │ https://avd.aquasec.com/nvd/cve-2026-54512                   │
+│                                                        ├─────────────────────┤          │        │                   ├───────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                                                        │ CVE-2026-54513      │          │        │                   │ 2.18.8, 2.21.4, 3.1.4     │ jackson-databind: Jackson-databind: Security bypass allows   │
+│                                                        │                     │          │        │                   │                           │ arbitrary code execution                                     │
+│                                                        │                     │          │        │                   │                           │ https://avd.aquasec.com/nvd/cve-2026-54513                   │
+├────────────────────────────────────────────────────────┼─────────────────────┤          │        ├───────────────────┼───────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ io.micrometer:micrometer-core (app.jar)                │ CVE-2026-40983      │          │        │ 1.15.1            │ 1.16.6, 1.15.12           │ micrometer: micrometer-core: Micrometer: Denial of Service   │
+│                                                        │                     │          │        │                   │                           │ via specially crafted gRPC requests                          │
+│                                                        │                     │          │        │                   │                           │ https://avd.aquasec.com/nvd/cve-2026-40983                   │
+│                                                        ├─────────────────────┤          │        │                   │                           ├──────────────────────────────────────────────────────────────┤
+│                                                        │ CVE-2026-40984      │          │        │                   │                           │ micrometer-core: micrometer-jetty11: micrometer-jetty12:     │
+│                                                        │                     │          │        │                   │                           │ Micrometer: Denial of Service via specially crafted HTTP     │
+│                                                        │                     │          │        │                   │                           │ requests...                                                  │
+│                                                        │                     │          │        │                   │                           │ https://avd.aquasec.com/nvd/cve-2026-40984                   │
+├────────────────────────────────────────────────────────┼─────────────────────┼──────────┤        ├───────────────────┼───────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ org.apache.tomcat.embed:tomcat-embed-core (app.jar)    │ CVE-2026-65182      │ CRITICAL │        │ 10.1.55           │ 11.0.25, 10.1.58, 9.0.121 │ Apache Tomcat: Apache Tomcat: Security constraint bypass due │
+│                                                        │                     │          │        │                   │                           │ to improper access control...                                │
+│                                                        │                     │          │        │                   │                           │ https://avd.aquasec.com/nvd/cve-2026-65182                   │
+│                                                        ├─────────────────────┤          │        │                   │                           ├──────────────────────────────────────────────────────────────┤
+│                                                        │ CVE-2026-65905      │          │        │                   │                           │ tomcat: Apache Tomcat: Authentication bypass via limited     │
+│                                                        │                     │          │        │                   │                           │ replay attack in DIGEST authenticator...                     │
+│                                                        │                     │          │        │                   │                           │ https://avd.aquasec.com/nvd/cve-2026-65905                   │
+│                                                        ├─────────────────────┤          │        │                   │                           ├──────────────────────────────────────────────────────────────┤
+│                                                        │ CVE-2026-68525      │          │        │                   │                           │ org.apache.tomcat/tomcat: Apache Tomcat: Unauthorized        │
+│                                                        │                     │          │        │                   │                           │ resource access via FORM authentication bypass               │
+│                                                        │                     │          │        │                   │                           │ https://avd.aquasec.com/nvd/cve-2026-68525                   │
+├────────────────────────────────────────────────────────┼─────────────────────┼──────────┤        ├───────────────────┼───────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ org.postgresql:postgresql (app.jar)                    │ CVE-2026-42198      │ HIGH     │        │ 42.7.7            │ 42.7.11                   │ jdbc.postgresql.org: pgjdbc: Client-side Denial of Service   │
+│                                                        │                     │          │        │                   │                           │ via malicious SCRAM-SHA-256 authentication                   │
+│                                                        │                     │          │        │                   │                           │ https://avd.aquasec.com/nvd/cve-2026-42198                   │
+│                                                        ├─────────────────────┤          │        │                   ├───────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                                                        │ CVE-2026-54291      │          │        │                   │ 42.7.12                   │ org.postgresql/postgresql: com.ongres.scram/scram-client:    │
+│                                                        │                     │          │        │                   │                           │ pgjdbc: Man-in-the-middle protection bypass via              │
+│                                                        │                     │          │        │                   │                           │ SCRAM-SHA-256-PLUS downgrade                                 │
+│                                                        │                     │          │        │                   │                           │ https://avd.aquasec.com/nvd/cve-2026-54291                   │
+├────────────────────────────────────────────────────────┼─────────────────────┤          │        ├───────────────────┼───────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ org.springframework.boot:spring-boot (app.jar)         │ CVE-2026-40973      │          │        │ 3.5.3             │ 4.0.6, 3.5.14             │ Spring Boot: Spring Boot: Arbitrary Code Execution and       │
+│                                                        │                     │          │        │                   │                           │ Session Hijacking via predictable...                         │
+│                                                        │                     │          │        │                   │                           │ https://avd.aquasec.com/nvd/cve-2026-40973                   │
+├────────────────────────────────────────────────────────┼─────────────────────┤          │        ├───────────────────┼───────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ org.springframework.data:spring-data-commons (app.jar) │ CVE-2026-41695      │          │        │ 3.5.1             │ 4.0.6, 3.5.12             │ Spring Data Commons: Spring Data Commons: Denial of Service  │
+│                                                        │                     │          │        │                   │                           │ via crafted property...                                      │
+│                                                        │                     │          │        │                   │                           │ https://avd.aquasec.com/nvd/cve-2026-41695                   │
+│                                                        ├─────────────────────┤          │        │                   │                           ├──────────────────────────────────────────────────────────────┤
+│                                                        │ CVE-2026-41716      │          │        │                   │                           │ Spring Data Commons: Spring Data Commons: Denial of Service  │
+│                                                        │                     │          │        │                   │                           │ due to cache...                                              │
+│                                                        │                     │          │        │                   │                           │ https://avd.aquasec.com/nvd/cve-2026-41716                   │
+├────────────────────────────────────────────────────────┼─────────────────────┤          │        ├───────────────────┼───────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ org.springframework:spring-core (app.jar)              │ CVE-2025-41249      │          │        │ 6.2.8             │ 6.2.11                    │ org.springframework/spring-core: Spring Framework Annotation │
+│                                                        │                     │          │        │                   │                           │ Detection Vulnerability                                      │
+│                                                        │                     │          │        │                   │                           │ https://avd.aquasec.com/nvd/cve-2025-41249                   │
+├────────────────────────────────────────────────────────┼─────────────────────┤          │        │                   ├───────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ org.springframework:spring-expression (app.jar)        │ CVE-2026-41850      │          │        │                   │ 7.0.8, 6.2.19             │ spring-framework: Spring Framework: Denial of Service via    │
+│                                                        │                     │          │        │                   │                           │ specially crafted SpEL expressions                           │
+│                                                        │                     │          │        │                   │                           │ https://avd.aquasec.com/nvd/cve-2026-41850                   │
+├────────────────────────────────────────────────────────┼─────────────────────┤          │        │                   │                           ├──────────────────────────────────────────────────────────────┤
+│ org.springframework:spring-webmvc (app.jar)            │ CVE-2026-41842      │          │        │                   │                           │ spring-framework: Spring Framework: Denial of Service when   │
+│                                                        │                     │          │        │                   │                           │ resolving static resources                                   │
+│                                                        │                     │          │        │                   │                           │ https://avd.aquasec.com/nvd/cve-2026-41842                   │
+│                                                        ├─────────────────────┤          │        │                   │                           ├──────────────────────────────────────────────────────────────┤
+│                                                        │ CVE-2026-41845      │          │        │                   │                           │ org.springframework: Spring Framework: Cross-site scripting  │
+│                                                        │                     │          │        │                   │                           │ (XSS) via incorrect JavaScript escaping                      │
+│                                                        │                     │          │        │                   │                           │ https://avd.aquasec.com/nvd/cve-2026-41845                   │
+└────────────────────────────────────────────────────────┴─────────────────────┴──────────┴────────┴───────────────────┴───────────────────────────┴──────────────────────────────────────────────────────────────┘

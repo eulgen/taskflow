@@ -58,7 +58,7 @@
 # ENTRYPOINT ["java", "-jar", "app.jar"]
 
 # Étape 1 : build
-FROM eclipse-temurin:17-jdk-jammy AS build
+FROM eclipse-temurin:21-jdk-jammy AS build
 WORKDIR /app
 COPY .mvn/ .mvn
 COPY mvnw pom.xml ./
@@ -67,10 +67,10 @@ COPY src ./src
 RUN ./mvnw -B package -DskipTests
 
 # Étape 2 : exécution
-FROM eclipse-temurin:17-jre-jammy
+FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
 RUN addgroup --system app && adduser --system --ingroup app app
-COPY --from=build /app/target/taskflow-api-*.jar app.jar
+COPY --from=build /app/target/taskflow*.jar app.jar
 USER app
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]

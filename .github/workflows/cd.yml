@@ -38,7 +38,7 @@ jobs:
       url: http://${{ secrets.VPS_HOST }}:8080
     steps:
       - name: Deploy to OVH VPS via SSH
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}

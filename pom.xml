@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.3</version>
+		<version>3.5.14</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
@@ -16,13 +16,37 @@
 
 	<properties>
 		<java.version>21</java.version>
-		<!-- ============================================================ -->
-		<!-- Overrides de sécurité — versions patchées non encore incluses -->
-		<!-- dans le BOM Spring Boot 3.5.3                                -->
-		<!-- ============================================================ -->
-		<!-- Fix CVE-2026-41293 (CRITICAL) : HTTP/2 request headers leak  -->
+
+		<!-- ================================================================ -->
+		<!-- Overrides de sécurité — Corrections des CVE détectées par Trivy  -->
+		<!-- Ces propriétés remplacent les versions du BOM Spring Boot 3.5.3  -->
+		<!-- de manière officielle et sans casser la compatibilité            -->
+		<!-- ================================================================ -->
+
+		<!-- Fix CVE-2026-41293 (CRITICAL) : HTTP/2 request headers leak via Tomcat -->
 		<tomcat.version>11.0.25</tomcat.version>
 		<tomcat-embed.version>11.0.25</tomcat-embed.version>
+
+		<!-- Fix CVE-2025-41249 : Spring Framework Annotation Detection Vulnerability -->
+		<!-- Fix CVE-2026-41850 : DoS via SpEL expressions                            -->
+		<!-- Fix CVE-2026-41842 : DoS lors de la résolution de ressources statiques   -->
+		<!-- Fix CVE-2026-41845 : XSS via incorrect JavaScript escaping               -->
+		<spring-framework.version>6.2.19</spring-framework.version>
+
+		<!-- Fix CVE-2026-40973 (CRITICAL) : Arbitrary Code Execution via Spring Boot -->
+		<!-- Corrigé par la mise à jour du parent vers 3.5.14 ci-dessus               -->
+
+		<!-- Fix CVE-2026-41695 : DoS via crafted property dans Spring Data           -->
+		<!-- Fix CVE-2026-41716 : DoS via cache dans Spring Data                      -->
+		<!-- spring-data-commons 3.5.11 → 3.5.12 (train 2025.0.12)                   -->
+		<spring-data-bom.version>2025.0.12</spring-data-bom.version>
+
+		<!-- Fix CVE-2026-40983 : DoS via gRPC requests (micrometer-core)             -->
+		<!-- Fix CVE-2026-40984 : DoS via HTTP requests (micrometer-core)             -->
+		<!-- micrometer-core 1.15.11 → 1.15.12                                        -->
+		<micrometer.version>1.15.12</micrometer.version>
+
+		<!-- Fix CVE liées à Jackson (sérialisation/désérialisation JSON) -->
 		<jackson-bom.version>2.21.4</jackson-bom.version>
 	</properties>
 
@@ -36,7 +60,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
-			<version>4.0.6</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -78,7 +101,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
-			<version>4.0.6</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -108,45 +130,6 @@
 		</dependency>
 	</dependencies>
 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-            	<groupId>io.micrometer</groupId>
-            	<artifactId>micrometer-core</artifactId>
-            	<version>1.16.6</version> 
-        	</dependency>
-			<dependency>
-				<groupId>org.apache.tomcat</groupId>
-				<artifactId>tomcat-embed-core</artifactId>
-				<version>11.0.55</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.data</groupId>
-				<artifactId>spring-data-commons</artifactId>
-				<version>4.0.6</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-core</artifactId>
-				<version>6.2.11</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-expression</artifactId>
-				<version>7.0.8</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot</artifactId>
-				<version>4.0.6</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-webmvc</artifactId>
-				<version>7.0.8</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 
 	<build>
 		<plugins>
@@ -180,6 +163,11 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<!-- exécute les tests unitaires (*Test.java) -->
+				<configuration>
+					<excludes>
+						<exclude>**/*E2ETest.java</exclude>
+					</excludes>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

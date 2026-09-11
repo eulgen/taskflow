@@ -39,16 +39,24 @@ jobs:
       - name: Récupérer le code du dépôt
         uses: actions/checkout@v4
 
-      # Étape 2 : Initialisation du moteur d'analyse CodeQL pour Java
+      # Étape 2 : Configurer l'environnement Java 21 (Requis pour la compilation Java 21)
+      - name: Configurer l'environnement Java 21 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+
+      # Étape 3 : Initialisation du moteur d'analyse CodeQL pour Java
       - name: Initialiser CodeQL
         uses: github/codeql-action/init@v3
         with:
           languages: java # Langage cible (Java pour API TaskFlow)
 
-      # Étape 3 : Compilation automatique du projet Java
-      - name: Compiler automatiquement le projet
-        uses: github/codeql-action/autobuild@v3
+      # Étape 4 : Compilation du projet Java
+      - name: Compilation du projet Java (Maven)
+        run: mvn -B compile -DskipTests
 
-      # Étape 4 : Exécution de l'analyse de sécurité et publication des rapports
+      # Étape 5 : Exécution de l'analyse de sécurité et publication des rapports
       - name: Analyser le code et envoyer le rapport
         uses: github/codeql-action/analyze@v3

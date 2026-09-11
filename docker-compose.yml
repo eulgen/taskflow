@@ -3,16 +3,16 @@ services:
     image: postgres:16-alpine
     container_name: taskflow-postgres
     environment:
-      POSTGRES_DB: taskflowdb
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d taskflowdb"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -24,11 +24,12 @@ services:
     image: taskflow-api:local
     container_name: taskflow-api
     ports:
-      - "8080:8080"
+      - "${APP_PORT}:${SERVER_PORT}"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/taskflowdb
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      SERVER_PORT: ${SERVER_PORT}
     depends_on:
       postgres:
         condition: service_healthy

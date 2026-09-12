@@ -39,7 +39,7 @@ jobs:
   #       uses: appleboy/ssh-action@v1.0.3
   #       with:
   #         host: ${{ secrets.VPS_HOST }}
-  #         username: ${{ secrets.VPS_USERNAME }}
+  #         username: ${{ secrets.VPS_USER }}
   #         key: ${{ secrets.VPS_SSH_KEY }}
   #         script: |
   #           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
@@ -75,6 +75,6 @@ jobs:
       - name: Test SSH connection
         env:
           VPS_HOST: ${{ secrets.VPS_HOST }}
-          VPS_USERNAME: ${{ secrets.VPS_USERNAME }}
+          VPS_USER: ${{ secrets.VPS_USER }}
         run: |
           ssh -vvv -o StrictHostKeyChecking=no -o ConnectTimeout=30 -i ~/.ssh/id_rsa "${VPS_USERNAME}@${VPS_HOST}" "echo 'SSH connection successful!' && whoami && hostname"

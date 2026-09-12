@@ -59,15 +59,30 @@ jobs:
           ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30 -i ~/.ssh/id_rsa "${VPS_USER}@${VPS_HOST}" << REMOTE
             echo "${GHCR_TOKEN}" | docker login ghcr.io -u ${GHCR_USER} --password-stdin
             docker pull ${GHCR_IMAGE}
+
+            # Si PostgreSQL n'est pas encore lancé sur le VPS, on lance un conteneur PostgreSQL
+            if ! docker ps | grep -q taskflow-db; then
+              echo "Lancement du conteneur PostgreSQL taskflow-db..."
+              docker run -d \
+                --name taskflow-db \
+                --restart always \
+                -e POSTGRES_USER="${SPRING_DATASOURCE_USERNAME}" \
+                -e POSTGRES_PASSWORD="${SPRING_DATASOURCE_PASSWORD}" \
+                -e POSTGRES_DB=taskflowdb \
+                -p 5432:5432 \
+                postgres:15 || true
+              sleep 5
+            fi
+
             docker stop taskflow-api || true
             docker rm taskflow-api || true
             docker run -d \
               --name taskflow-api \
               --restart always \
+              --net=host \
               -e SPRING_DATASOURCE_URL="${SPRING_DATASOURCE_URL}" \
               -e SPRING_DATASOURCE_USERNAME="${SPRING_DATASOURCE_USERNAME}" \
               -e SPRING_DATASOURCE_PASSWORD="${SPRING_DATASOURCE_PASSWORD}" \
-              -p 8080:8080 \
               ${GHCR_IMAGE}
             docker image prune -f
             sleep 5

@@ -63,14 +63,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup SSH key
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_rsa
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
+          ssh-keyscan -H "$VPS_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
 
       - name: Test SSH connection
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USERNAME: ${{ secrets.VPS_USERNAME }}
         run: |
-          ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30 \
-            ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} \
-            "echo 'SSH connection successful!' && whoami && hostname"
+          ssh -vvv -o StrictHostKeyChecking=no -o ConnectTimeout=30 -i ~/.ssh/id_rsa "${VPS_USERNAME}@${VPS_HOST}" "echo 'SSH connection successful!' && whoami && hostname"

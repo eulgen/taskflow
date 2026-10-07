@@ -81,7 +81,7 @@ jobs:
 
       - name: Archiver le rapport de couverture JaCoCo
         if: always() # Toujours exécuté, même en cas d'échec d'une étape précédente
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: jacoco-report
           path: target/site/jacoco/
@@ -157,7 +157,7 @@ jobs:
           output-file: sbom.spdx.json
 
       - name: Archiver le SBOM (Artefact)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: sbom-report
           path: sbom.spdx.json
